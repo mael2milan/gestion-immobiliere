@@ -1,74 +1,118 @@
-COMPTE(
-    id_compte PK,
-    identifiant,
-    actif
-)
+```mermaid
+erDiagram
+    direction TB
 
-AGENT(
-    id_agent PK,
-    nom, prenom, email,
-    id_compte FK -> COMPTE, UNIQUE
-)
+    AGENT {
+        int id PK
+        string nom
+        string prenom
+        string email UK
+    }
 
-VENDEUR(
-    id_vendeur PK,
-    nom, prenom, telephone, email
-)
+    VENDEUR {
+        int id PK
+        string nom
+        string prenom
+        string telephone
+        string email
+    }
 
-ACHETEUR(
-    id_acheteur PK,
-    nom, prenom, telephone,
-    budget_max, superficie_min,
-    chambres_min, garage_souhaite,
-    id_agent FK -> AGENT
-)
+    COMMUNE {
+        string code_insee PK
+        string nom
+    }
 
-COMMUNE(
-    code_insee PK,
-    nom
-)
+    BIEN {
+        int id PK
+        string type_bien
+        string etape_vente
+        string adresse
+        float superficie
+        decimal prix_demande
+        int nb_chambres
+        int nb_garages
+        int agent_id FK
+        int vendeur_id FK
+        string commune_id FK
+    }
 
-BIEN(
-    id_bien PK,
-    type_bien, adresse, superficie,
-    nb_chambres, nb_garages,
-    prix_demande, etape_vente,
-    id_agent FK -> AGENT,
-    id_vendeur FK -> VENDEUR,
-    code_insee FK -> COMMUNE
-)
+    ACHETEUR {
+        int id PK
+        string nom
+        string prenom
+        string telephone
+        decimal budget_max
+        float superficie_min
+        int chambres_min
+        boolean garage_souhaite
+        int agent_id FK
+    }
 
-ACHETEUR_COMMUNE(
-    id_acheteur PK, FK -> ACHETEUR,
-    code_insee PK, FK -> COMMUNE
-)
+    ACHETEUR_COMMUNE {
+        int id PK
+        int acheteur_id FK
+        string commune_id FK
+    }
 
-PROPOSITION(
-    id_proposition PK,
-    date_proposition, prix_presente,
-    decision, date_reponse, commentaire,
-    id_acheteur FK -> ACHETEUR,
-    id_bien FK -> BIEN
-)
+    PROPOSITION {
+        int id PK
+        datetime date_proposition
+        decimal prix_presente
+        string decision
+        datetime date_reponse
+        string commentaire
+        int acheteur_id FK
+        int bien_id FK
+    }
 
-VISITE(
-    id_visite PK,
-    debut, fin, statut, compte_rendu,
-    id_acheteur FK -> ACHETEUR,
-    id_bien FK -> BIEN,
-    id_agent FK -> AGENT
-)
+    VISITE {
+        int id PK
+        datetime debut
+        datetime fin
+        string statut
+        string compte_rendu
+        int acheteur_id FK
+        int bien_id FK
+        int agent_id FK
+    }
 
-RENDEZ_VOUS(
-    id_rdv PK,
-    debut, fin, objet, statut,
-    id_agent FK -> AGENT,
-    id_vendeur FK -> VENDEUR
-)
+    RENDEZ_VOUS {
+        int id PK
+        datetime debut
+        datetime fin
+        string objet
+        string statut
+        int agent_id FK
+        int vendeur_id FK
+    }
 
-OFFRE(
-    id_offre PK,
-    date_offre, montant, statut,
-    id_acheteur FK -> ACHETEUR,
-    id_bien FK -> BIEN
-)
+    OFFRE {
+        int id PK
+        datetime date_offre
+        decimal montant
+        string statut
+        int acheteur_id FK
+        int bien_id FK
+    }
+
+    AGENT ||--o{ BIEN : gere
+    VENDEUR ||--o{ BIEN : vend
+    COMMUNE ||--o{ BIEN : localise
+    AGENT ||--o{ ACHETEUR : suit
+
+    ACHETEUR ||--o{ ACHETEUR_COMMUNE : recherche
+    COMMUNE ||--o{ ACHETEUR_COMMUNE : est_recherchee
+
+    ACHETEUR ||--o{ PROPOSITION : recoit
+    BIEN ||--o{ PROPOSITION : concerne
+
+    ACHETEUR ||--o{ VISITE : effectue
+    BIEN ||--o{ VISITE : concerne
+    AGENT ||--o{ VISITE : accompagne
+
+    AGENT ||--o{ RENDEZ_VOUS : organise
+    VENDEUR ||--o{ RENDEZ_VOUS : participe
+
+    ACHETEUR ||--o{ OFFRE : formule
+    BIEN ||--o{ OFFRE : recoit
+```
