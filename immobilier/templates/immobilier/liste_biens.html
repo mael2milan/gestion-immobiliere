@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Biens immobiliers</title>
+</head>
+<body>
+    <h1>Liste des biens immobiliers</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Adresse</th>
+                <th>Type</th>
+                <th>Superficie</th>
+                <th>Prix demandé</th>
+                <th>Commune</th>
+                <th>Agent responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bien in biens %}
+            <tr>
+                <td>
+                    <a href="{% url 'immobilier:detail_bien' bien.pk %}">
+                        {{ bien.adresse }}
+                    </a>
+                </td>
+                <td>{{ bien.get_type_bien_display }}</td>
+                <td>{{ bien.superficie }} m²</td>
+                <td>{{ bien.prix_demande }} €</td>
+                <td>{{ bien.commune.nom }}</td>
+                <td>{{ bien.agent.prenom }} {{ bien.agent.nom }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucun bien enregistré.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

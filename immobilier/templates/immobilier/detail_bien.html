@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail du bien</title>
+</head>
+<body>
+    <h1>{{ bien.adresse }}</h1>
+
+    <h2>Caractéristiques</h2>
+    <p>Type : {{ bien.get_type_bien_display }}</p>
+    <p>Commune : {{ bien.commune.nom }}</p>
+    <p>Superficie : {{ bien.superficie }} m²</p>
+    <p>Prix demandé : {{ bien.prix_demande }} €</p>
+    <p>Chambres : {{ bien.nb_chambres }}</p>
+    <p>Garages : {{ bien.nb_garages }}</p>
+    <p>Étape de vente : {{ bien.get_etape_vente_display }}</p>
+
+    <h2>Contacts</h2>
+    <p>Agent : {{ bien.agent.prenom }} {{ bien.agent.nom }}</p>
+    <p>Vendeur : {{ bien.vendeur.prenom }} {{ bien.vendeur.nom }}</p>
+
+    <a href="{% url 'immobilier:liste_biens' %}">
+        Retour à la liste des biens
+    </a>
+</body>
+</html>
