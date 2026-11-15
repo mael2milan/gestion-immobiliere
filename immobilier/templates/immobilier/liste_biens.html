@@ -8,7 +8,58 @@
 <body>
     <h1>Liste des biens immobiliers</h1>
 
-    <table border="1">
+    <h2>Rechercher un bien</h2>
+
+    <form method="get">
+        <label for="commune">Commune :</label>
+        <select name="commune" id="commune">
+            <option value="">Toutes les communes</option>
+            {% for commune in communes %}
+                <option value="{{ commune.code_insee }}"
+                    {% if commune_selectionnee == commune.code_insee %}selected{% endif %}>
+                    {{ commune.nom }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="type_bien">Type :</label>
+        <select name="type_bien" id="type_bien">
+            <option value="">Tous les types</option>
+            {% for valeur, libelle in types_biens %}
+                <option value="{{ valeur }}"
+                    {% if type_selectionne == valeur %}selected{% endif %}>
+                    {{ libelle }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="prix_max">Prix maximal (€) :</label>
+        <input type="number" name="prix_max" id="prix_max"
+               min="0" step="0.01" value="{{ prix_max }}">
+
+        <label for="tri">Trier par :</label>
+        <select name="tri" id="tri">
+            <option value="prix_croissant"
+                {% if tri_selectionne == "prix_croissant" %}selected{% endif %}>
+                Prix croissant
+            </option>
+            <option value="prix_decroissant"
+                {% if tri_selectionne == "prix_decroissant" %}selected{% endif %}>
+                Prix décroissant
+            </option>
+        </select>
+
+        <button type="submit">Rechercher</button>
+        <a href="{% url 'immobilier:liste_biens' %}">Réinitialiser</a>
+    </form>
+
+    {% if erreur_prix %}
+        <p>{{ erreur_prix }}</p>
+    {% endif %}
+
+    <h2>Résultats : {{ biens|length }} bien(s)</h2>
+
+    <table border="1" cellpadding="8">
         <thead>
             <tr>
                 <th>Adresse</th>
@@ -21,22 +72,22 @@
         </thead>
         <tbody>
             {% for bien in biens %}
-            <tr>
-                <td>
-                    <a href="{% url 'immobilier:detail_bien' bien.pk %}">
-                        {{ bien.adresse }}
-                    </a>
-                </td>
-                <td>{{ bien.get_type_bien_display }}</td>
-                <td>{{ bien.superficie }} m²</td>
-                <td>{{ bien.prix_demande }} €</td>
-                <td>{{ bien.commune.nom }}</td>
-                <td>{{ bien.agent.prenom }} {{ bien.agent.nom }}</td>
-            </tr>
+                <tr>
+                    <td>
+                        <a href="{% url 'immobilier:detail_bien' bien.pk %}">
+                            {{ bien.adresse }}
+                        </a>
+                    </td>
+                    <td>{{ bien.get_type_bien_display }}</td>
+                    <td>{{ bien.superficie }} m²</td>
+                    <td>{{ bien.prix_demande }} €</td>
+                    <td>{{ bien.commune.nom }}</td>
+                    <td>{{ bien.agent.prenom }} {{ bien.agent.nom }}</td>
+                </tr>
             {% empty %}
-            <tr>
-                <td colspan="6">Aucun bien enregistré.</td>
-            </tr>
+                <tr>
+                    <td colspan="6">Aucun bien ne correspond aux critères.</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
