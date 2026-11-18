@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail de l'acheteur</title>
+</head>
+
+<body>
+    <h1>{{ acheteur.prenom }} {{ acheteur.nom }}</h1>
+
+    <h2>Informations générales</h2>
+    <p>Téléphone : {{ acheteur.telephone }}</p>
+    <p>Agent responsable : {{ acheteur.agent }}</p>
+
+    <h2>Critères de recherche</h2>
+    <p>Budget maximal : {{ acheteur.budget_max }} €</p>
+    <p>Superficie minimale : {{ acheteur.superficie_min }} m²</p>
+    <p>Nombre minimal de chambres : {{ acheteur.chambres_min }}</p>
+
+    <p>
+        Garage souhaité :
+        {% if acheteur.garage_souhaite %}
+            Oui
+        {% else %}
+            Non
+        {% endif %}
+    </p>
+
+    <h3>Communes recherchées</h3>
+    <ul>
+        {% for commune in acheteur.communes_recherchees.all %}
+            <li>{{ commune.nom }}</li>
+        {% empty %}
+            <li>Aucune commune précisée.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'immobilier:liste_acheteurs' %}">
+        Retour à la liste des acheteurs
+    </a>
+</body>
+
+<h2>Biens recommandés</h2>
+
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>Bien immobilier</th>
+            <th>Commune</th>
+            <th>Prix</th>
+            <th>Compatibilité</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resultat in recommandations %}
+        <tr>
+            <td>
+                <a href="{% url 'immobilier:detail_bien' resultat.bien.pk %}">
+                    {{ resultat.bien.adresse }}
+                </a>
+            </td>
+            <td>{{ resultat.bien.commune.nom }}</td>
+            <td>{{ resultat.bien.prix_demande }} €</td>
+            <td>{{ resultat.score }}/100</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">
+                Aucun bien suffisamment compatible.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</html>

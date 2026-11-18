@@ -2,8 +2,9 @@ from decimal import Decimal, InvalidOperation
 
 from django.shortcuts import render, get_object_or_404
 
-from .models import Bien, Commune
+from .models import Bien, Acheteur, Vendeur, RendezVous, Commune
 
+from .services import recommander_biens
 
 def liste_biens(request):
     biens = Bien.objects.select_related(
@@ -77,4 +78,66 @@ def detail_bien(request, pk):
         request,
         "immobilier/detail_bien.html",
         {"bien": bien}
+    )
+
+def liste_acheteurs(request):
+    acheteurs = Acheteur.objects.select_related(
+        "agent"
+    ).order_by("nom", "prenom")
+
+    return render(
+        request,
+        "immobilier/liste_acheteurs.html",
+        {"acheteurs": acheteurs}
+    )
+
+
+def detail_acheteur(request, pk):
+    acheteur = get_object_or_404(
+        Acheteur.objects.select_related("agent")
+        .prefetch_related("communes_recherchees"),
+        pk=pk
+    )
+
+    recommandations = recommander_biens(acheteur)
+
+    return render(
+        request,
+        "immobilier/detail_acheteur.html",
+        {
+            "acheteur": acheteur,
+            "recommandations": recommandations,
+        }
+    )
+
+
+def liste_vendeurs(request):
+    vendeurs = Vendeur.objects.order_by("nom", "prenom")
+
+    return render(
+        request,
+        "immobilier/liste_vendeurs.html",
+        {"vendeurs": vendeurs}
+    )
+
+
+def detail_vendeur(request, pk):
+    vendeur = get_object_or_404(Vendeur, pk=pk)
+
+    biens = Bien.objects.filter(
+        vendeur=vendeur
+    ).select_related("commune", "agent").order_by("adresse")
+
+    rendez_vous = RendezVous.objects.filter(
+        vendeur=vendeur
+    ).select_related("agent").order_by("debut")
+
+    return render(
+        request,
+        "immobilier/detail_vendeur.html",
+        {
+            "vendeur": vendeur,
+            "biens": biens,
+            "rendez_vous": rendez_vous,
+        }
     )
