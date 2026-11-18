@@ -2,7 +2,10 @@ from decimal import Decimal, InvalidOperation
 
 from django.shortcuts import render, get_object_or_404
 
-from .models import Bien, Acheteur, Vendeur, RendezVous, Commune
+from .models import (
+    Bien, Commune, Acheteur, Vendeur, RendezVous,
+    Proposition, Visite, Offre
+)
 
 from .services import recommander_biens
 
@@ -101,12 +104,27 @@ def detail_acheteur(request, pk):
 
     recommandations = recommander_biens(acheteur)
 
+    propositions = Proposition.objects.filter(
+        acheteur=acheteur
+    ).select_related("bien").order_by("-date_proposition")
+
+    visites = Visite.objects.filter(
+        acheteur=acheteur
+    ).select_related("bien", "agent").order_by("-debut")
+
+    offres = Offre.objects.filter(
+        acheteur=acheteur
+    ).select_related("bien").order_by("-date_offre")
+
     return render(
         request,
         "immobilier/detail_acheteur.html",
         {
             "acheteur": acheteur,
             "recommandations": recommandations,
+            "propositions": propositions,
+            "visites": visites,
+            "offres": offres,
         }
     )
 
