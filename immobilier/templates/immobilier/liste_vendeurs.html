@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des vendeurs</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'immobilier:liste_biens' %}">Biens</a> |
+        <a href="{% url 'immobilier:liste_acheteurs' %}">Acheteurs</a> |
+        <a href="{% url 'immobilier:liste_vendeurs' %}">Vendeurs</a>
+    </nav>
+
+    <h1>Liste des vendeurs</h1>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Vendeur</th>
+                <th>Téléphone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendeur in vendeurs %}
+            <tr>
+                <td>
+                    <a href="{% url 'immobilier:detail_vendeur' vendeur.pk %}">
+                        {{ vendeur.prenom }} {{ vendeur.nom }}
+                    </a>
+                </td>
+                <td>{{ vendeur.telephone }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Aucun vendeur enregistré.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

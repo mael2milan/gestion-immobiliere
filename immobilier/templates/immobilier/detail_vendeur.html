@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail du vendeur</title>
+</head>
+<body>
+    <h1>{{ vendeur.prenom }} {{ vendeur.nom }}</h1>
+
+    <p>Téléphone : {{ vendeur.telephone }}</p>
+
+    <h2>Biens immobiliers du vendeur</h2>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Adresse</th>
+                <th>Prix</th>
+                <th>Étape de vente</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bien in biens %}
+            <tr>
+                <td>
+                    <a href="{% url 'immobilier:detail_bien' bien.pk %}">
+                        {{ bien.adresse }}
+                    </a>
+                </td>
+                <td>{{ bien.prix_demande }} €</td>
+                <td>{{ bien.get_etape_vente_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Aucun bien associé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Rendez-vous avec le vendeur</h2>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Objet</th>
+                <th>Agent</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rdv in rendez_vous %}
+            <tr>
+                <td>{{ rdv.debut|date:"d/m/Y H:i" }}</td>
+                <td>{{ rdv.objet }}</td>
+                <td>{{ rdv.agent }}</td>
+                <td>{{ rdv.get_statut_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Aucun rendez-vous enregistré.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>
+        <a href="{% url 'immobilier:liste_vendeurs' %}">
+            Retour à la liste des vendeurs
+        </a>
+    </p>
+</body>
+</html>
