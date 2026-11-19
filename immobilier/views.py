@@ -4,10 +4,13 @@ from django.shortcuts import render, get_object_or_404
 
 from .models import (
     Bien, Commune, Acheteur, Vendeur, RendezVous,
-    Proposition, Visite, Offre
+    Proposition, Visite, Offre, Agent
 )
 
-from .services import recommander_biens
+from .services import (
+    recommander_biens,
+    acheteurs_potentiels_pour_agent,
+)
 
 def liste_biens(request):
     biens = Bien.objects.select_related(
@@ -157,5 +160,44 @@ def detail_vendeur(request, pk):
             "vendeur": vendeur,
             "biens": biens,
             "rendez_vous": rendez_vous,
+        }
+    )
+
+def liste_agents(request):
+    agents = Agent.objects.order_by("nom", "prenom")
+
+    return render(
+        request,
+        "immobilier/liste_agents.html",
+        {"agents": agents}
+    )
+
+
+def detail_agent(request, pk):
+    agent = get_object_or_404(Agent, pk=pk)
+
+    biens = Bien.objects.filter(
+        agent=agent
+    ).select_related("vendeur", "commune").order_by("adresse")
+
+    vendeurs = Vendeur.objects.filter(
+        biens__agent=agent
+    ).distinct().order_by("nom", "prenom")
+
+    acheteurs_suivis = Acheteur.objects.filter(
+        agent=agent
+    ).order_by("nom", "prenom")
+
+    acheteurs_potentiels = acheteurs_potentiels_pour_agent(agent)
+
+    return render(
+        request,
+        "immobilier/detail_agent.html",
+        {
+            "agent": agent,
+            "biens": biens,
+            "vendeurs": vendeurs,
+            "acheteurs_suivis": acheteurs_suivis,
+            "acheteurs_potentiels": acheteurs_potentiels,
         }
     )

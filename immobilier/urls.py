@@ -12,4 +12,7 @@ urlpatterns = [
 
     path("vendeurs/", views.liste_vendeurs, name="liste_vendeurs"),
     path("vendeurs/<int:pk>/", views.detail_vendeur, name="detail_vendeur"),
+
+    path("agents/", views.liste_agents, name="liste_agents"),
+    path("agents/<int:pk>/", views.detail_agent, name="detail_agent"),
 ]

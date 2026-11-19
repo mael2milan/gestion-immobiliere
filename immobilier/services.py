@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from .models import Bien
+from .models import Bien, Acheteur
 
 
 def score_compatibilite(acheteur, bien, communes):
@@ -63,3 +63,49 @@ def recommander_biens(acheteur, seuil=65):
     )
 
     return recommandations[:5]
+
+def acheteurs_potentiels_pour_agent(agent, seuil=65):
+    biens = list(
+        Bien.objects.filter(
+            agent=agent,
+            etape_vente=Bien.EtapeVente.MISE_EN_VENTE
+        ).select_related("commune")
+    )
+
+    resultats = []
+
+    for acheteur in Acheteur.objects.prefetch_related(
+        "communes_recherchees"
+    ):
+        communes = {
+            commune.code_insee
+            for commune in acheteur.communes_recherchees.all()
+        }
+
+        meilleur_bien = None
+        meilleur_score = 0
+
+        for bien in biens:
+            score = score_compatibilite(
+                acheteur, bien, communes
+            )
+
+            if meilleur_bien is None or score > meilleur_score:
+                meilleur_bien = bien
+                meilleur_score = score
+
+        if meilleur_bien is not None and meilleur_score >= seuil:
+            resultats.append({
+                "acheteur": acheteur,
+                "bien": meilleur_bien,
+                "score": meilleur_score,
+            })
+
+    resultats.sort(
+        key=lambda resultat: (
+            -resultat["score"],
+            resultat["acheteur"].nom,
+        )
+    )
+
+    return resultats

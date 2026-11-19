@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Portefeuille de l'agent</title>
+</head>
+<body>
+    <h1>Portefeuille de {{ agent.prenom }} {{ agent.nom }}</h1>
+    <p>Email : {{ agent.email }}</p>
+
+    <h2>Biens gérés</h2>
+    <ul>
+        {% for bien in biens %}
+            <li>
+                <a href="{% url 'immobilier:detail_bien' bien.pk %}">
+                    {{ bien.adresse }}
+                </a>
+                - {{ bien.prix_demande }} €
+                - {{ bien.get_etape_vente_display }}
+            </li>
+        {% empty %}
+            <li>Aucun bien géré.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Portefeuille vendeurs</h2>
+    <ul>
+        {% for vendeur in vendeurs %}
+            <li>
+                <a href="{% url 'immobilier:detail_vendeur' vendeur.pk %}">
+                    {{ vendeur.prenom }} {{ vendeur.nom }}
+                </a>
+            </li>
+        {% empty %}
+            <li>Aucun vendeur associé.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Acheteurs suivis par l'agent</h2>
+    <ul>
+        {% for acheteur in acheteurs_suivis %}
+            <li>
+                <a href="{% url 'immobilier:detail_acheteur' acheteur.pk %}">
+                    {{ acheteur.prenom }} {{ acheteur.nom }}
+                </a>
+            </li>
+        {% empty %}
+            <li>Aucun acheteur suivi.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Acheteurs potentiels pour les biens de l'agent</h2>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Acheteur</th>
+            <th>Bien compatible</th>
+            <th>Score</th>
+        </tr>
+        {% for resultat in acheteurs_potentiels %}
+        <tr>
+            <td>
+                <a href="{% url 'immobilier:detail_acheteur' resultat.acheteur.pk %}">
+                    {{ resultat.acheteur.prenom }} {{ resultat.acheteur.nom }}
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'immobilier:detail_bien' resultat.bien.pk %}">
+                    {{ resultat.bien.adresse }}
+                </a>
+            </td>
+            <td>{{ resultat.score }}/100</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">Aucun acheteur potentiel identifié.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p>
+        <a href="{% url 'immobilier:liste_agents' %}">
+            Retour à la liste des agents
+        </a>
+    </p>
+</body>
+</html>

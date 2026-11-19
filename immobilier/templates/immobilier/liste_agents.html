@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Agents immobiliers</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'immobilier:liste_biens' %}">Biens</a> |
+        <a href="{% url 'immobilier:liste_acheteurs' %}">Acheteurs</a> |
+        <a href="{% url 'immobilier:liste_vendeurs' %}">Vendeurs</a> |
+        <a href="{% url 'immobilier:liste_agents' %}">Agents</a>
+    </nav>
+
+    <h1>Agents immobiliers</h1>
+
+    <ul>
+        {% for agent in agents %}
+            <li>
+                <a href="{% url 'immobilier:detail_agent' agent.pk %}">
+                    {{ agent.prenom }} {{ agent.nom }}
+                </a>
+            </li>
+        {% empty %}
+            <li>Aucun agent enregistré.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
