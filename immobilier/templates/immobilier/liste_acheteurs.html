@@ -1,46 +1,32 @@
+{% extends "immobilier/base.html" %}
+{% block title %}Acheteurs | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des acheteurs</title>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'immobilier:liste_biens' %}">Biens</a> |
-        <a href="{% url 'immobilier:liste_acheteurs' %}">Acheteurs</a> |
-        <a href="{% url 'immobilier:liste_vendeurs' %}">Vendeurs</a>
-    </nav>
-
-    <h1>Liste des acheteurs</h1>
-
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Budget maximal</th>
-                <th>Superficie minimale</th>
-                <th>Agent responsable</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for acheteur in acheteurs %}
-            <tr>
-                <td>
-                    <a href="{% url 'immobilier:detail_acheteur' acheteur.pk %}">
-                        {{ acheteur.prenom }} {{ acheteur.nom }}
-                    </a>
-                </td>
-                <td>{{ acheteur.budget_max }} €</td>
-                <td>{{ acheteur.superficie_min }} m²</td>
-                <td>{{ acheteur.agent }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">Aucun acheteur enregistré.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Clients</p>
+        <h1>Acheteurs</h1>
+        <p class="muted">Retrouvez les profils et leurs critères de recherche.</p>
+    </div>
+    <span class="count-pill">{{ acheteurs|length }} acheteur(s)</span>
+</section>
+<section class="card">
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead><tr><th>Acheteur</th><th>Budget maximal</th><th>Surface minimale</th><th>Agent responsable</th></tr></thead>
+            <tbody>
+                {% for acheteur in acheteurs %}
+                <tr>
+                    <td><a href="{% url 'immobilier:detail_acheteur' acheteur.pk %}">{{ acheteur.prenom }} {{ acheteur.nom }}</a></td>
+                    <td>{{ acheteur.budget_max }} €</td>
+                    <td>{{ acheteur.superficie_min }} m²</td>
+                    <td><a href="{% url 'immobilier:detail_agent' acheteur.agent.pk %}">{{ acheteur.agent.prenom }} {{ acheteur.agent.nom }}</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="empty-state">Aucun acheteur enregistré.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

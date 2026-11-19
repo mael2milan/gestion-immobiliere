@@ -1,75 +1,55 @@
+{% extends "immobilier/base.html" %}
+{% block title %}{{ vendeur.prenom }} {{ vendeur.nom }} | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Détail du vendeur</title>
-</head>
-<body>
-    <h1>{{ vendeur.prenom }} {{ vendeur.nom }}</h1>
+{% block content %}
+<a class="back-link" href="{% url 'immobilier:liste_vendeurs' %}">Retour aux vendeurs</a>
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Fiche vendeur</p>
+        <h1>{{ vendeur.prenom }} {{ vendeur.nom }}</h1>
+        <p class="muted">Téléphone : {{ vendeur.telephone }}</p>
+    </div>
+</section>
 
-    <p>Téléphone : {{ vendeur.telephone }}</p>
-
+<section class="card">
     <h2>Biens immobiliers du vendeur</h2>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead><tr><th>Adresse</th><th>Commune</th><th>Prix demandé</th><th>Étape de vente</th></tr></thead>
+            <tbody>
+                {% for bien in biens %}
+                <tr>
+                    <td><a href="{% url 'immobilier:detail_bien' bien.pk %}">{{ bien.adresse }}</a></td>
+                    <td>{{ bien.commune.nom }}</td>
+                    <td>{{ bien.prix_demande }} €</td>
+                    <td><span class="tag">{{ bien.get_etape_vente_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="empty-state">Aucun bien associé à ce vendeur.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Adresse</th>
-                <th>Prix</th>
-                <th>Étape de vente</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for bien in biens %}
-            <tr>
-                <td>
-                    <a href="{% url 'immobilier:detail_bien' bien.pk %}">
-                        {{ bien.adresse }}
-                    </a>
-                </td>
-                <td>{{ bien.prix_demande }} €</td>
-                <td>{{ bien.get_etape_vente_display }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3">Aucun bien associé.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+<section class="card">
     <h2>Rendez-vous avec le vendeur</h2>
-
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Objet</th>
-                <th>Agent</th>
-                <th>Statut</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for rdv in rendez_vous %}
-            <tr>
-                <td>{{ rdv.debut|date:"d/m/Y H:i" }}</td>
-                <td>{{ rdv.objet }}</td>
-                <td>{{ rdv.agent }}</td>
-                <td>{{ rdv.get_statut_display }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">Aucun rendez-vous enregistré.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <p>
-        <a href="{% url 'immobilier:liste_vendeurs' %}">
-            Retour à la liste des vendeurs
-        </a>
-    </p>
-</body>
-</html>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead><tr><th>Date</th><th>Objet</th><th>Agent</th><th>Statut</th></tr></thead>
+            <tbody>
+                {% for rdv in rendez_vous %}
+                <tr>
+                    <td>{{ rdv.debut|date:"d/m/Y H:i" }}</td>
+                    <td>{{ rdv.objet }}</td>
+                    <td><a href="{% url 'immobilier:detail_agent' rdv.agent.pk %}">{{ rdv.agent }}</a></td>
+                    <td><span class="tag">{{ rdv.get_statut_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="empty-state">Aucun rendez-vous enregistré.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

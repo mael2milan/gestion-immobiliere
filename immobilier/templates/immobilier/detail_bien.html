@@ -1,28 +1,42 @@
+{% extends "immobilier/base.html" %}
+{% block title %}{{ bien.adresse }} | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Détail du bien</title>
-</head>
-<body>
-    <h1>{{ bien.adresse }}</h1>
+{% block content %}
+<a class="back-link" href="{% url 'immobilier:liste_biens' %}">Retour aux biens</a>
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Fiche du bien</p>
+        <h1>{{ bien.adresse }}</h1>
+        <p class="muted">{{ bien.commune.nom }} · {{ bien.get_type_bien_display }}</p>
+    </div>
+    <span class="count-pill">{{ bien.prix_demande }} €</span>
+</section>
 
-    <h2>Caractéristiques</h2>
-    <p>Type : {{ bien.get_type_bien_display }}</p>
-    <p>Commune : {{ bien.commune.nom }}</p>
-    <p>Superficie : {{ bien.superficie }} m²</p>
-    <p>Prix demandé : {{ bien.prix_demande }} €</p>
-    <p>Chambres : {{ bien.nb_chambres }}</p>
-    <p>Garages : {{ bien.nb_garages }}</p>
-    <p>Étape de vente : {{ bien.get_etape_vente_display }}</p>
-
-    <h2>Contacts</h2>
-    <p>Agent : {{ bien.agent.prenom }} {{ bien.agent.nom }}</p>
-    <p>Vendeur : {{ bien.vendeur.prenom }} {{ bien.vendeur.nom }}</p>
-
-    <a href="{% url 'immobilier:liste_biens' %}">
-        Retour à la liste des biens
-    </a>
-</body>
-</html>
+<div class="two-columns">
+    <section class="card" aria-labelledby="titre-caracteristiques">
+        <h2 id="titre-caracteristiques">Caractéristiques</h2>
+        <dl class="definition-grid">
+            <div class="item"><dt>Type</dt><dd>{{ bien.get_type_bien_display }}</dd></div>
+            <div class="item"><dt>Commune</dt><dd>{{ bien.commune.nom }}</dd></div>
+            <div class="item"><dt>Superficie</dt><dd>{{ bien.superficie }} m²</dd></div>
+            <div class="item"><dt>Prix demandé</dt><dd>{{ bien.prix_demande }} €</dd></div>
+            <div class="item"><dt>Chambres</dt><dd>{{ bien.nb_chambres }}</dd></div>
+            <div class="item"><dt>Garages</dt><dd>{{ bien.nb_garages }}</dd></div>
+            <div class="item"><dt>Étape de vente</dt><dd>{{ bien.get_etape_vente_display }}</dd></div>
+        </dl>
+    </section>
+    <section class="card" aria-labelledby="titre-interlocuteurs">
+        <h2 id="titre-interlocuteurs">Interlocuteurs</h2>
+        <ul class="simple-list">
+            <li>
+                <div class="eyebrow">Agent responsable</div>
+                <a class="entry-title" href="{% url 'immobilier:detail_agent' bien.agent.pk %}">{{ bien.agent.prenom }} {{ bien.agent.nom }}</a>
+            </li>
+            <li>
+                <div class="eyebrow">Vendeur</div>
+                <a class="entry-title" href="{% url 'immobilier:detail_vendeur' bien.vendeur.pk %}">{{ bien.vendeur.prenom }} {{ bien.vendeur.nom }}</a>
+            </li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

@@ -1,30 +1,31 @@
+{% extends "immobilier/base.html" %}
+{% block title %}Agents | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Agents immobiliers</title>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'immobilier:liste_biens' %}">Biens</a> |
-        <a href="{% url 'immobilier:liste_acheteurs' %}">Acheteurs</a> |
-        <a href="{% url 'immobilier:liste_vendeurs' %}">Vendeurs</a> |
-        <a href="{% url 'immobilier:liste_agents' %}">Agents</a>
-    </nav>
-
-    <h1>Agents immobiliers</h1>
-
-    <ul>
-        {% for agent in agents %}
-            <li>
-                <a href="{% url 'immobilier:detail_agent' agent.pk %}">
-                    {{ agent.prenom }} {{ agent.nom }}
-                </a>
-            </li>
-        {% empty %}
-            <li>Aucun agent enregistré.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Équipe</p>
+        <h1>Agents immobiliers</h1>
+        <p class="muted">Accédez aux portefeuilles et aux rapprochements immobiliers.</p>
+    </div>
+    <span class="count-pill">{{ agents|length }} agent(s)</span>
+</section>
+<section class="card">
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead><tr><th>Agent</th><th>Email</th><th>Portefeuille</th></tr></thead>
+            <tbody>
+                {% for agent in agents %}
+                <tr>
+                    <td><a href="{% url 'immobilier:detail_agent' agent.pk %}">{{ agent.prenom }} {{ agent.nom }}</a></td>
+                    <td>{{ agent.email }}</td>
+                    <td><a class="secondary-link" href="{% url 'immobilier:detail_agent' agent.pk %}">Consulter</a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="empty-state">Aucun agent enregistré.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

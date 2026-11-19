@@ -1,88 +1,72 @@
+{% extends "immobilier/base.html" %}
+{% block title %}{{ agent.prenom }} {{ agent.nom }} | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Portefeuille de l'agent</title>
-</head>
-<body>
-    <h1>Portefeuille de {{ agent.prenom }} {{ agent.nom }}</h1>
-    <p>Email : {{ agent.email }}</p>
+{% block content %}
+<a class="back-link" href="{% url 'immobilier:liste_agents' %}">Retour aux agents</a>
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Portefeuille de l'agent</p>
+        <h1>{{ agent.prenom }} {{ agent.nom }}</h1>
+        <p class="muted">{{ agent.email }}</p>
+    </div>
+</section>
 
-    <h2>Biens gérés</h2>
-    <ul>
-        {% for bien in biens %}
+<div class="two-columns">
+    <section class="card">
+        <h2>Biens gérés</h2>
+        <ul class="simple-list">
+            {% for bien in biens %}
             <li>
-                <a href="{% url 'immobilier:detail_bien' bien.pk %}">
-                    {{ bien.adresse }}
-                </a>
-                - {{ bien.prix_demande }} €
-                - {{ bien.get_etape_vente_display }}
+                <a class="entry-title" href="{% url 'immobilier:detail_bien' bien.pk %}">{{ bien.adresse }}</a>
+                <div class="entry-note">{{ bien.prix_demande }} € · {{ bien.get_etape_vente_display }}</div>
             </li>
-        {% empty %}
-            <li>Aucun bien géré.</li>
-        {% endfor %}
-    </ul>
+            {% empty %}
+            <li class="muted">Aucun bien géré.</li>
+            {% endfor %}
+        </ul>
+    </section>
 
-    <h2>Portefeuille vendeurs</h2>
-    <ul>
-        {% for vendeur in vendeurs %}
-            <li>
-                <a href="{% url 'immobilier:detail_vendeur' vendeur.pk %}">
-                    {{ vendeur.prenom }} {{ vendeur.nom }}
-                </a>
-            </li>
-        {% empty %}
-            <li>Aucun vendeur associé.</li>
-        {% endfor %}
-    </ul>
+    <section class="card">
+        <h2>Portefeuille vendeurs</h2>
+        <ul class="simple-list">
+            {% for vendeur in vendeurs %}
+            <li><a class="entry-title" href="{% url 'immobilier:detail_vendeur' vendeur.pk %}">{{ vendeur.prenom }} {{ vendeur.nom }}</a></li>
+            {% empty %}
+            <li class="muted">Aucun vendeur associé.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
 
+<section class="card space-before">
     <h2>Acheteurs suivis par l'agent</h2>
-    <ul>
+    <ul class="simple-list">
         {% for acheteur in acheteurs_suivis %}
-            <li>
-                <a href="{% url 'immobilier:detail_acheteur' acheteur.pk %}">
-                    {{ acheteur.prenom }} {{ acheteur.nom }}
-                </a>
-            </li>
+        <li><a class="entry-title" href="{% url 'immobilier:detail_acheteur' acheteur.pk %}">{{ acheteur.prenom }} {{ acheteur.nom }}</a></li>
         {% empty %}
-            <li>Aucun acheteur suivi.</li>
+        <li class="muted">Aucun acheteur suivi.</li>
         {% endfor %}
     </ul>
+</section>
 
-    <h2>Acheteurs potentiels pour les biens de l'agent</h2>
-
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Acheteur</th>
-            <th>Bien compatible</th>
-            <th>Score</th>
-        </tr>
-        {% for resultat in acheteurs_potentiels %}
-        <tr>
-            <td>
-                <a href="{% url 'immobilier:detail_acheteur' resultat.acheteur.pk %}">
-                    {{ resultat.acheteur.prenom }} {{ resultat.acheteur.nom }}
-                </a>
-            </td>
-            <td>
-                <a href="{% url 'immobilier:detail_bien' resultat.bien.pk %}">
-                    {{ resultat.bien.adresse }}
-                </a>
-            </td>
-            <td>{{ resultat.score }}/100</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">Aucun acheteur potentiel identifié.</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <p>
-        <a href="{% url 'immobilier:liste_agents' %}">
-            Retour à la liste des agents
-        </a>
-    </p>
-</body>
-</html>
+<section class="card">
+    <h2>Acheteurs potentiels</h2>
+    <p class="card-subtitle">Pour chaque acheteur, le bien disponible le plus compatible parmi les biens gérés par cet agent. Score minimal : 65/100.</p>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead><tr><th>Acheteur</th><th>Bien compatible</th><th>Score</th></tr></thead>
+            <tbody>
+                {% for resultat in acheteurs_potentiels %}
+                <tr>
+                    <td><a href="{% url 'immobilier:detail_acheteur' resultat.acheteur.pk %}">{{ resultat.acheteur.prenom }} {{ resultat.acheteur.nom }}</a></td>
+                    <td><a href="{% url 'immobilier:detail_bien' resultat.bien.pk %}">{{ resultat.bien.adresse }}</a></td>
+                    <td><span class="score">{{ resultat.score }}/100</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="empty-state">Aucun acheteur potentiel identifié.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

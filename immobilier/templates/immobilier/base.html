@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{% block title %}Gestion immobilière{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'immobilier/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="{% url 'immobilier:liste_biens' %}" aria-label="Accueil, liste des biens">
+                <span class="brand-mark" aria-hidden="true">GI</span>
+                <span class="brand-label">Gestion immobilière</span>
+            </a>
+            <nav class="main-nav" aria-label="Navigation principale">
+                <a href="{% url 'immobilier:liste_biens' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'liste_biens' or request.resolver_match.url_name == 'detail_bien' %}is-active{% endif %}"
+                   {% if request.resolver_match.url_name == 'liste_biens' or request.resolver_match.url_name == 'detail_bien' %}aria-current="page"{% endif %}>Biens</a>
+                <a href="{% url 'immobilier:liste_acheteurs' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'liste_acheteurs' or request.resolver_match.url_name == 'detail_acheteur' %}is-active{% endif %}"
+                   {% if request.resolver_match.url_name == 'liste_acheteurs' or request.resolver_match.url_name == 'detail_acheteur' %}aria-current="page"{% endif %}>Acheteurs</a>
+                <a href="{% url 'immobilier:liste_vendeurs' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'liste_vendeurs' or request.resolver_match.url_name == 'detail_vendeur' %}is-active{% endif %}"
+                   {% if request.resolver_match.url_name == 'liste_vendeurs' or request.resolver_match.url_name == 'detail_vendeur' %}aria-current="page"{% endif %}>Vendeurs</a>
+                <a href="{% url 'immobilier:liste_agents' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'liste_agents' or request.resolver_match.url_name == 'detail_agent' %}is-active{% endif %}"
+                   {% if request.resolver_match.url_name == 'liste_agents' or request.resolver_match.url_name == 'detail_agent' %}aria-current="page"{% endif %}>Agents</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-container" id="contenu">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span>Gestion immobilière</span>
+            <span>Application de gestion et de rapprochement immobilier</span>
+        </div>
+    </footer>
+</body>
+</html>

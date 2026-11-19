@@ -1,95 +1,90 @@
+{% extends "immobilier/base.html" %}
+{% block title %}Biens immobiliers | Gestion immobilière{% endblock %}
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Biens immobiliers</title>
-</head>
-<body>
-    <h1>Liste des biens immobiliers</h1>
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Catalogue</p>
+        <h1>Biens immobiliers</h1>
+        <p class="muted">Consultez les biens et affinez votre recherche.</p>
+    </div>
+    <span class="count-pill">{{ biens|length }} résultat(s)</span>
+</section>
 
-    <h2>Rechercher un bien</h2>
-
-    <form method="get">
-        <label for="commune">Commune :</label>
-        <select name="commune" id="commune">
-            <option value="">Toutes les communes</option>
-            {% for commune in communes %}
-                <option value="{{ commune.code_insee }}"
-                    {% if commune_selectionnee == commune.code_insee %}selected{% endif %}>
-                    {{ commune.nom }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label for="type_bien">Type :</label>
-        <select name="type_bien" id="type_bien">
-            <option value="">Tous les types</option>
-            {% for valeur, libelle in types_biens %}
-                <option value="{{ valeur }}"
-                    {% if type_selectionne == valeur %}selected{% endif %}>
-                    {{ libelle }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label for="prix_max">Prix maximal (€) :</label>
-        <input type="number" name="prix_max" id="prix_max"
-               min="0" step="0.01" value="{{ prix_max }}">
-
-        <label for="tri">Trier par :</label>
-        <select name="tri" id="tri">
-            <option value="prix_croissant"
-                {% if tri_selectionne == "prix_croissant" %}selected{% endif %}>
-                Prix croissant
-            </option>
-            <option value="prix_decroissant"
-                {% if tri_selectionne == "prix_decroissant" %}selected{% endif %}>
-                Prix décroissant
-            </option>
-        </select>
-
-        <button type="submit">Rechercher</button>
-        <a href="{% url 'immobilier:liste_biens' %}">Réinitialiser</a>
+<section class="card" aria-labelledby="titre-filtres">
+    <h2 id="titre-filtres">Rechercher un bien</h2>
+    <form class="filter-grid" method="get">
+        <div class="form-field">
+            <label for="commune">Commune</label>
+            <select class="form-control" name="commune" id="commune">
+                <option value="">Toutes les communes</option>
+                {% for commune in communes %}
+                <option value="{{ commune.code_insee }}" {% if commune_selectionnee == commune.code_insee %}selected{% endif %}>{{ commune.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="type_bien">Type de bien</label>
+            <select class="form-control" name="type_bien" id="type_bien">
+                <option value="">Tous les types</option>
+                {% for valeur, libelle in types_biens %}
+                <option value="{{ valeur }}" {% if type_selectionne == valeur %}selected{% endif %}>{{ libelle }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="prix_max">Prix maximal (€)</label>
+            <input class="form-control" type="number" name="prix_max" id="prix_max" min="0" step="0.01" value="{{ prix_max }}" placeholder="Ex. 250000">
+        </div>
+        <div class="form-field">
+            <label for="tri">Trier par</label>
+            <select class="form-control" name="tri" id="tri">
+                <option value="prix_croissant" {% if tri_selectionne == "prix_croissant" %}selected{% endif %}>Prix croissant</option>
+                <option value="prix_decroissant" {% if tri_selectionne == "prix_decroissant" %}selected{% endif %}>Prix décroissant</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button class="button" type="submit">Rechercher</button>
+            <a class="reset-link" href="{% url 'immobilier:liste_biens' %}">Effacer</a>
+        </div>
     </form>
-
     {% if erreur_prix %}
-        <p>{{ erreur_prix }}</p>
+    <p class="alert" role="alert">{{ erreur_prix }}</p>
     {% endif %}
+</section>
 
-    <h2>Résultats : {{ biens|length }} bien(s)</h2>
-
-    <table border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Adresse</th>
-                <th>Type</th>
-                <th>Superficie</th>
-                <th>Prix demandé</th>
-                <th>Commune</th>
-                <th>Agent responsable</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for bien in biens %}
+<section class="card" aria-labelledby="titre-resultats">
+    <div class="card-title-row">
+        <h2 id="titre-resultats">Résultats</h2>
+        <span class="tag">{{ biens|length }} bien(s)</span>
+    </div>
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <td>
-                        <a href="{% url 'immobilier:detail_bien' bien.pk %}">
-                            {{ bien.adresse }}
-                        </a>
-                    </td>
+                    <th>Adresse</th>
+                    <th>Type</th>
+                    <th>Superficie</th>
+                    <th>Prix demandé</th>
+                    <th>Commune</th>
+                    <th>Agent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bien in biens %}
+                <tr>
+                    <td><a href="{% url 'immobilier:detail_bien' bien.pk %}">{{ bien.adresse }}</a></td>
                     <td>{{ bien.get_type_bien_display }}</td>
                     <td>{{ bien.superficie }} m²</td>
                     <td>{{ bien.prix_demande }} €</td>
                     <td>{{ bien.commune.nom }}</td>
-                    <td>{{ bien.agent.prenom }} {{ bien.agent.nom }}</td>
+                    <td><a href="{% url 'immobilier:detail_agent' bien.agent.pk %}">{{ bien.agent.prenom }} {{ bien.agent.nom }}</a></td>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="6">Aucun bien ne correspond aux critères.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+                {% empty %}
+                <tr><td class="empty-state" colspan="6">Aucun bien ne correspond à ces critères.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
